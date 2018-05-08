@@ -1,0 +1,23 @@
+{
+  "name": "instadat",
+  "version": "1.0.0",
+  "description": "Not really sure what I'm gonna do with this yet",
+  "main": "auth.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://source.developers.google.com/p/workspace-202522/r/InstaDat"
+  },
+  "author": "Chris Santoso",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "mongodb": "^3.0.7",
+    "node": "^10.0.0",
+    "querystring": "^0.2.0",
+    "simple-oauth2": "^1.5.2"
+  }
+}
