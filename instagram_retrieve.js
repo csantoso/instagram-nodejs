@@ -10,37 +10,34 @@ const options = {
     cert: fs.readFileSync('certs/domain.crt', 'utf8')
 };
 
-https.createServer(options, function (req, res) {
-    res.writeHead(200);
-    res.end('SUP FUCKERSSS\n');
-
-    // console.log(req.url); 
-    pathName = url.parse(req.url).pathname;	
-    console.log(pathName); 
-    if (pathName == '/callback_uri') {
-	// TODO: Async Callback here 
-	code = req.url.searchParams.get('code') 
-	console.log(code);  
-    }
-}).listen(8081);
- 
-
 class InstagramAPI {
+
+    /* 
+     * The InstagramAPI object is meant to expose an interface for which data can be retrieved from Instagram's public API. https://www.instagram.com/developer/ 
+     * This class handles everything necessary to establish a connection with the OAuth2-based API and handle data requests. 
+     */
     constructor(client_id, client_secret, redir_uri) {
 	this.client_id = client_id; 
 	this.client_secret = client_secret; 
 	this.redir_uri = redir_uri; 
-	this.credentials = this.create_credentials(); 	
+	this.credentials = this.create_credentials_obj(); 	
 	
-	this.redir_auth_url();  
+	this.prompt_auth_url();  
     }
-
-    redir_auth_url() {
-    // https://api.instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=code
+    
+    /* Comments: The first step in retrieving an access token from the Instagram API is to prompt the user whose account we're tyring to gain access to for permission to do so. This is done by simply telling the user to grant us access via. the URL template below 
+     * :params: None
+     * :return: None 
+     */
+    prompt_auth_url() {
     console.log("Provide authorization here: https://api.instagram.com/oauth/authorize/?client_id=" + String(this.client_id) + "&redirect_uri=" + String(this.redir_uri) + "&response_type=code"); 
     }
     
-    create_credentials() {
+    /* Returns a JSON-formatted object of credentials for use with oauth2's create() function. Note: tokenHost, tokenPath, and authorizePath are really const's, so maybe they're better off living as static global declarations. 
+     * :params: None 
+     * :return<OAuth2 Object> The credentials object used to create() an OAuth2 connection. 
+     */
+    create_credentials_obj() {
 	var cred = {    
 	    client: {   
 		id: this.client_id,	
@@ -54,11 +51,30 @@ class InstagramAPI {
 	}   
 	return oauth2.create(cred); 
     }
+    
+    /* Performs a POST request with the 'code' retrieved from the authorization request. This POST sends the 'code' and retrieves an access_token in exchange. 
+     * :param code<String> The code returned to the /callback_uri after the user has granted access to the data for his/her account.  
+     */
+    code_for_access_token(code) {
+	return 0; 
+    }
 } 
 
-iapi_inst = new InstagramAPI('3a6c6164d69646fbba17c4b7bb515aeb', '915951d0c22143269b8fcd0725f65595', 'https://localhost:8081/callback_uri'); 
+// TODO: Move this outside of this file; this module isn't meant to instantiate and handle InstagramAPI instances. It's only meant to define the class and methods to interact with it. 
+InstAPI = new InstagramAPI('3a6c6164d69646fbba17c4b7bb515aeb', '915951d0c22143269b8fcd0725f65595', 'https://localhost:8081/callback_uri'); 
 
 
+https.createServer(options, function (req, res) {
+    res.writeHead(200);
+    res.end('SUP FUCKERSSS\n');
 
-// console.log(iapi_inst.credentials); 
+    // console.log(req.url); 
+    pathName = url.parse(req.url).pathname;	
+    console.log(pathName); 
+    if (pathName == '/callback_uri') {
+	code = url.parse(req.url, true).query['code'] 	
+	
+    }
+}).listen(8081);
+ 
 
