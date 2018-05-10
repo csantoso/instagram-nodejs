@@ -7,7 +7,26 @@ var client_id = auth.CLIENT_ID;
 var client_secret = auth.CLIENT_SECRET; 
 
 
+class HTTPS_Helper {
+
+    /* Https GET wrapper. 
+     * :param host_url<String>: URL passed straight to https.get()
+     * :param get_callback<Function> Callback function for https.get(). The callback function should accept a single parameter, which is an instance of http.IncomingMessage.
+     * :return<Object>: The data_buffer object. 
+     */
+    static Get(host_url, get_callback) {
+	https.get(host_url, get_callback);  
+    } 
+
+    static Post(host_url, data, post_callback) {
+	/* UNIMPLEMENTED */ 
+	return; 
+    }
+}
+
 module.exports = {
+    
+    HTTPS_Helper: HTTPS_Helper, 
 
     /* Build the data object to make a POST request for the Access Token. 
      * :param data<String>: The 'code' retrieved from the manual user auth 

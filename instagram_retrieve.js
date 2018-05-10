@@ -8,7 +8,7 @@ const fs = require('fs')
 const url = require('url')  
 const async_hooks = require('async_hooks') 
 
-let common = require("./common.js") 
+let Helpers = require("./common.js") 
 
 
 /********************************************************************************************
@@ -38,20 +38,11 @@ class InstagramAPI {
 		this.access_token = null;  
     }
    
-    /*  
-    get access_token() {
-	return this._access_token; 
-    }
-
-    set access_token(value) {
-	this._access_token = value; 
-    }
-    */ 
     _prompt_implicit_auth_url() {
     	console.log("https://api.instagram.com/oauth/authorize/?client_id=" + String(this.client_id) + "&redirect_uri=" + String(this.redir_uri) + "&response_type=token"); 
     }
 
-    /* Comments: The first step in retrieving an access token from the Instagram API is to prompt the user whose account we're tyring to gain access to for permission to do so. This is done by simply telling the user to grant us access via. the URL template below 
+    /* The first step in retrieving an access token from the Instagram API is to prompt the user whose account we're tyring to gain access to for permission to do so. This is done by simply telling the user to grant us access via. the URL template below 
      * :params: None
      * :return: None 
      */
@@ -107,20 +98,44 @@ class InstagramAPI {
 	});
 	*/ 	
     }
-    
+
+
 } 
 
+
+const SELF_URL = "https://api.instagram.com/v1/users/self/?access_token="
+const SELF_MEDIA_RECENT_URL = "https://api.instagram.com/v1/users/self/media/recent/?access_token=" 
 
 class UsersEndpoint extends InstagramAPI {
     constructor(client_id, client_secret, redir_uri) {
 	super(client_id, client_secret, redir_uri); 
     }
+    
+    get_selfInfo() {
+	Helpers.HTTPS_Helper.Get(String(SELF_URL + this.access_token.token['access_token']), this._def_get_callback); 	
+    }   
 
+    get_selfMediaRecent() {
+	Helpers.HTTPS_Helper.Get(String(SELF_MEDIA_RECENT_URL + this.access_token.token['access_token']), this._def_get_callback); 
+    }
 
+    _def_get_callback(res) {	
+	res.on('data', function (res_data) {	    
+		// console.log("_def_get_callback(res)"); 
+		// console.log(JSON.parse(res_data.toString())); 
+		console.log(res_data.toString()); 
+        });     
+	res.on('error', function (err) {
+		console.error(err);  
+	}); 	
+    }
+        
+              
 }	
 
-// TODO: Move this outside of this file; this module isn't meant to instantiate and handle InstagramAPI instances. It's only meant to define the class and methods to interact with it. 
-var InstAPI = new InstagramAPI('3a6c6164d69646fbba17c4b7bb515aeb', '915951d0c22143269b8fcd0725f65595', 'https://localhost:8081/callback_uri'); 
+// var InstAPI = new InstagramAPI('3a6c6164d69646fbba17c4b7bb515aeb', '915951d0c22143269b8fcd0725f65595', 'https://localhost:8081/callback_uri'); 
+
+var InstAPI = new UsersEndpoint('3a6c6164d69646fbba17c4b7bb515aeb', '915951d0c22143269b8fcd0725f65595', 'https://localhost:8081/callback_uri'); 
 
 
 https.createServer(options, function (req, res) {
@@ -133,8 +148,26 @@ https.createServer(options, function (req, res) {
 	InstAPI._oauth2_get_access_token.call(InstAPI, code); 
     }
     
-    if (InstAPI.access_token) 
+    if (InstAPI.access_token) { 
 	res.end('access Token: \n' + InstAPI.access_token.token['access_token']);
+	// InstAPI.get_selfInfo(); 
+	InstAPI.get_selfMediaRecent();
+
+
+	/* 
+	 * Call to the User Endpoint API to retrieve data about the User whose acess token is referred to
+	 */ 
+	/*
+	https.get('https://api.instagram.com/v1/users/self/?access_token=' + String(InstAPI.access_token.token['access_token']), function(res) {
+	    res.on('data', function (res_data) {
+		console.log(JSON.parse(res_data.toString())); 
+	    });     
+	    res.on('error', function (err) {
+		console.error(err);  
+	    }); 
+	}); 
+	*/ 
+    }
     else
 	res.end('HAAAY FUCKKEERRSSSS\n'); 
 
