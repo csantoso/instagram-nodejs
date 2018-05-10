@@ -1,7 +1,7 @@
 const https = require('https') 
 const url = require('url')  
 const fs = require('fs') 
-const API = require("./endpoints.js")
+const API = require("./instagram/endpoints.js")
 
 const options = {
     key: fs.readFileSync('certs/domain.key', 'utf8'),
