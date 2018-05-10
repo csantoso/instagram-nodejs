@@ -2,9 +2,9 @@ const querystring = require('querystring');
 const https = require('https'); 
 const http = require('http'); 
 
-let auth = require('./auth.js') 
-var client_id = auth.CLIENT_ID; 
-var client_secret = auth.CLIENT_SECRET; 
+// let auth = require('./auth.js') 
+// var client_id = auth.CLIENT_ID; 
+// var client_secret = auth.CLIENT_SECRET; 
 
 
 class HTTPS_Helper {

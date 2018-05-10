@@ -8,8 +8,9 @@ const options = {
     cert: fs.readFileSync('certs/domain.crt', 'utf8')
 };
 
+// constructor(client_id, client_secret, redir_uri) {
 
-var InstAPI = new API.Endpoints('3a6c6164d69646fbba17c4b7bb515aeb', '915951d0c22143269b8fcd0725f65595', 'https://localhost:8081/callback_uri'); 
+var InstAPI = new API.Endpoints('<client_id>', '<client_secret>', '<redirect_uri>'); 
 
 https.createServer(options, function (req, res) {
     res.writeHead(200);
